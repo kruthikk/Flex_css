@@ -1,0 +1,39 @@
+@import '~@angular/material/core/theming/all-theme';
+
+@include mat-core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+$trivia-app-primary:mat-palette($mat-pink);
+$trivia-app-accent:mat-palette($mat-pink, A200, A100, A400);
+
+$trivia-app-warn: mat-palette($mat-red);
+
+
+$trivia-app-theme-background:(
+	status-bar: map_get($mat-teal, 300),
+	app-bar: map_get($mat-teal, 100),
+	background: map_get($mat-teal, 50),
+	hover: rgba(black, 0.04),
+	card: white,
+	dialog:white,
+	disabled-button: rgba(black,0.12),
+	raised-button: white
+);
+
+//app theme funtion returns the theme from the palletes
+
+@function mat-app-theme($primary, $accent, $warn, $background){
+	@return (
+		primary: $primary,
+		accent:$accent,
+		warn:$warn,
+		is-dark:false,
+		foreground: $mat-light-theme-foreground,
+		background:$background
+
+	);
+}
+
+$trivia-app-theme: mat-app-theme($trivia-app-primary, $trivia-app-accent, $trivia-app-warn, $trivia-app-theme-background);
+
+@include angular-material-theme($trivia-app-theme);
