@@ -1,5 +1,6 @@
 import {Category} from './category'
-import {Question} from './question'
+import {Question, Answer} from './question'
+
 
 export {Category} from './category';
-export {Question} from './question';
+export {Question, Answer} from './question';
