@@ -1,9 +1,11 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators, FormArray, FormControl, ValidatorFn} from '@angular/forms';
-import {Router} from '@angular/router';
+import {Store} from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
 
-import {Category,Question, Answer} from '../../model';
-import {CategoryService, TagService, QuestionService} from '../../services';
+import { AppStore } from '../app/store/app-store';
+import { QuestionActions } from '../app/store/actions/';
+import { Category, Question, Answer }     from '../../model';
 
 @Component({
 	templateUrl: './question-add-update.component.html',
@@ -11,6 +13,9 @@ import {CategoryService, TagService, QuestionService} from '../../services';
 })
 
 export class QuestionAddUpdateComponent implements OnInit, OnDestroy {
+	tagsObs: Observable<string[]>;
+  	categoriesObs: Observable<Category[]>;
+
 	categories: Category[];
 	sub: any;
 
@@ -32,10 +37,11 @@ export class QuestionAddUpdateComponent implements OnInit, OnDestroy {
 	}
 
 	constructor(private fb:FormBuilder,
-				private router:Router,
-				private categoryService: CategoryService,
-				private tagService:TagService,
-				private questionService:QuestionService){}
+		private store: Store<AppStore>,
+		private questionActions: QuestionActions){
+			this.categoriesObs = store.select(s=> s.categories);
+			this.tagsObs = store.select(s=>s.tags);
+		}
 
 	ngOnInit(){
 		this.question = new Question();
@@ -45,11 +51,8 @@ export class QuestionAddUpdateComponent implements OnInit, OnDestroy {
 		questionControl.valueChanges.debounceTime(500).subscribe(v=>this.computeAutoTags());
 		this.answers.valueChanges.debounceTime(500).subscribe(v=>this.computeAutoTags());
 
-		this.sub = this.categoryService.getCategories()
-					.subscribe(categories => this.categories = categories);
-		
-		this.sub2 = this.tagService.getTags()
-					.subscribe(tags=> this.tags=tags);
+		this.sub = this.categoriesObs.subscribe(categories => this.categories = categories);
+		this.sub2 = this.tagsObs.subscribe(tags=> this.tags=tags);
 	}
 
 	ngOnDestroy(){
@@ -75,7 +78,7 @@ export class QuestionAddUpdateComponent implements OnInit, OnDestroy {
 		this.setTagsArray();
 	}
 
-	OnSubmit(){
+	onSubmit(){
 		this.questionForm.updateValueAndValidity();
 		if(this.questionForm.invalid)
 			return;
@@ -98,10 +101,7 @@ export class QuestionAddUpdateComponent implements OnInit, OnDestroy {
 	}
 
 	saveQuestion(question:Question){
-		this.questionService.saveQuestion(question).subscribe(response=> {
-			console.log("navigating....");
-			this.router.navigate(['/questions']);
-		});
+		this.store.dispatch(this.questionActions.addQuestion(question));
 	}
 
 	computeAutoTags(){

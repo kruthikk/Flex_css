@@ -11,6 +11,22 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { routes }   from './app.route';
 import { AppComponent, CategoriesComponent, TagsComponent, QuestionsComponent, QuestionAddUpdateComponent } from './components';
 import { CategoryService, TagService, QuestionService } from './services';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { CategoryEffects, TagEffects, QuestionEffects } from './components/app/store/effects';
+import { CategoryActions, TagActions, QuestionActions } from './components/app/store/actions';
+import {default as reducer } from './components/app/store/app-store';
+import {AngularFireModule} from 'angularfire2';
+import { AngularFireDatabaseModule } from "angularfire2/database-deprecated"
+
+export const firebaseConfig = {
+    apiKey: "AIzaSyCGbTtH0O_u-ZdjEXRgs91_RjXTw1KiwBk",
+    authDomain: "rwa-trivia-b7662.firebaseapp.com",
+    databaseURL: "https://rwa-trivia-b7662.firebaseio.com",
+    storageBucket: "rwa-trivia-b7662.appspot.com",
+    messagingSenderId: "1046052195149"
+}
 
 @NgModule({
   declarations: [
@@ -27,10 +43,19 @@ import { CategoryService, TagService, QuestionService } from './services';
     //Material
     MaterialModule.forRoot(),
     //Flex
-    FlexLayoutModule.forRoot()
+    FlexLayoutModule.forRoot(),
+    StoreModule.provideStore(reducer),
+    StoreDevtoolsModule.instrumentOnlyWithExtension({
+      maxAge: 20
+    }),
+    EffectsModule.run(CategoryEffects),
+    EffectsModule.run(TagEffects),
+    EffectsModule.run(QuestionEffects),
+    AngularFireDatabaseModule,
+    AngularFireModule.initializeApp(firebaseConfig)
   ],
   providers: [ 
-    CategoryService, TagService, QuestionService
+    AngularFireDatabaseModule, CategoryService, TagService, QuestionService, CategoryActions, TagActions, QuestionActions
   ],
   bootstrap: [AppComponent]
 })

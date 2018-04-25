@@ -2,40 +2,34 @@ import {Injectable} from '@angular/core';
 import {Headers,Http} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import '../rxjs-extensions';
-
-import {Question, Category} from '../model'
-import {CategoryService} from './category.service'
+//import { AngularFire, FirebaseListObservable } from 'angularfire2';
+import {AngularFireDatabase,FirebaseObjectObservable,FirebaseListObservable  } from 'angularfire2/database-deprecated';
+import {Question} from '../model'
+import { Store } from '@ngrx/store';
+import { AppStore } from '../components/app/store/app-store';
+import { QuestionActions } from '../components/app/store/actions';
 
 @Injectable()
 export class QuestionService {
-  private _serviceUrl = 'http://localhost:3000/questions';  // URL to web api
-  constructor(private http: Http,
-              private categoryService: CategoryService) { 
+  //private _serviceUrl = 'http://localhost:3000/questions';  // URL to web api
+  constructor(private af: AngularFireDatabase,
+    private store: Store<AppStore>,
+    private questionActions: QuestionActions) { 
   }
 
   getQuestions(): Observable<Question[]> {
-
-      let url = this._serviceUrl;
-
-      return Observable.forkJoin(
-        this.http.get(url).map<any, Question[]>(res => res.json()), 
-        this.categoryService.getCategories())
-        .map((combined, index) => {
-          let questions: Question[] = combined[0];
-          let categories: Category[] = combined[1];
-          questions.forEach(q => {
-            q.categories = [];
-            q.categoryIds.forEach(id => q.categories.push(categories.find(element => element.id == id)))
-          })
-          return questions;
-        })
+      return this.af.list('/questions');
   }
 
-  saveQuestion(question: Question): Observable<Question> {
-    let url = this._serviceUrl;
-
-    return this.http.post(url, question)
-               .map(res => res.json());
+  saveQuestion(question: Question) {
+    this.af.list('/questions').push(question).then(
+      (ret) => {  //success
+        this.store.dispatch(this.questionActions.addQuestionSuccess());
+      },
+      (error: Error) => {//error
+        console.error(error);
+      }
+    );
   }
 
 

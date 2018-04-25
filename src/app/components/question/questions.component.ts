@@ -1,8 +1,10 @@
 import {Component, Input, OnInit, OnDestroy} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+import { Store } from '@ngrx/store';
 
-import {Question} from '../../model';
-import {QuestionService} from '../../services';
+import {Question, Category} from '../../model';
+import { AppStore } from '../app/store/app-store';
+
 
 @Component({
 	selector: 'question-list',
@@ -10,19 +12,29 @@ import {QuestionService} from '../../services';
 	styleUrls: ['./questions.component.scss']
 })
 
-export class QuestionsComponent implements OnInit {
+export class QuestionsComponent implements OnInit, OnDestroy {
+	questionsObs: Observable<Question[]>;
 	questions: Question[];
+	categoryDictObs: Observable<{[key: number]: Category}>;
+	categoryDictionary: {[key: number]: Category};
 	sub: any;
-
-	constructor(private questionService: QuestionService){}
-
-	ngOnInit(){
-		this.sub = this.questionService.getQuestions()
-					.subscribe(questions => this.questions = questions);
+	sub2: any;
+  
+	constructor(private store: Store<AppStore>) {
+	  this.questionsObs = store.select(s => s.questions);
+	  this.categoryDictObs = store.select(s => s.categoryDictionary);
 	}
-
-	ngOnDestroy(){
-		if (this.sub)
-			this.sub.unsubscribe();
+  
+	ngOnInit() {
+	  this.sub = this.questionsObs.subscribe(questions => this.questions = questions);
+	  this.sub2 = this.categoryDictObs.subscribe(cd => this.categoryDictionary = cd);
 	}
-}
+  
+	ngOnDestroy() {
+	  if (this.sub)
+		this.sub.unsubscribe();
+	  if (this.sub2)
+		this.sub2.unsubscribe();
+	}
+  
+  }

@@ -3,6 +3,8 @@ import {Observable} from 'rxjs/Observable';
 
 import {Category} from '../../model';
 import {CategoryService} from '../../services';
+import { Store } from '@ngrx/store';
+import { AppStore } from '../app/store/app-store';
 
 @Component({
 	selector: 'category-list',
@@ -11,14 +13,16 @@ import {CategoryService} from '../../services';
 })
 
 export class CategoriesComponent implements OnInit {
+	categoriesObs: Observable<Category[]>;
 	categories: Category[];
 	sub: any;
 
-	constructor(private categoryService: CategoryService){}
+	constructor(private store: Store<AppStore>){
+		this.categoriesObs = store.select(s=> s.categories);
+	}
 
 	ngOnInit(){
-		this.sub = this.categoryService.getCategories()
-					.subscribe(categories => this.categories = categories);
+		this.sub = this.categoriesObs.subscribe(categories => this.categories = categories);
 	}
 
 	ngOnDestroy(){
