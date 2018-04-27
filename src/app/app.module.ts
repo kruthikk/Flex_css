@@ -44,6 +44,9 @@ export const firebaseConfig = {
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
+    AngularFireDatabaseModule,
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireAuthModule,
 
     //Material
     MaterialModule.forRoot(),
@@ -55,13 +58,13 @@ export const firebaseConfig = {
     }),
     EffectsModule.run(CategoryEffects),
     EffectsModule.run(TagEffects),
-    EffectsModule.run(QuestionEffects),
-    AngularFireDatabaseModule,
-    AngularFireModule.initializeApp(firebaseConfig),
-    AngularFireAuthModule
+    EffectsModule.run(QuestionEffects)
+    
   ],
   providers: [ 
-    AngularFireDatabaseModule, CategoryService, TagService, QuestionService, CategoryActions, TagActions, QuestionActions, AuthenticationService, AuthGuard, UserActions, UIStateActions
+    AngularFireDatabaseModule, 
+    AuthenticationService, AuthGuard, 
+    CategoryService, TagService, QuestionService, CategoryActions, TagActions, QuestionActions, UserActions, UIStateActions
   ],
   bootstrap: [AppComponent]
 })
