@@ -10,7 +10,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { routes }   from './app.route';
 import { AppComponent, CategoriesComponent, TagsComponent, QuestionsComponent, QuestionAddUpdateComponent, LoginComponent, PasswordAuthComponent } from './components';
-import { CategoryService, TagService, QuestionService, AuthenticationService } from './services';
+import { CategoryService, TagService, QuestionService, AuthenticationService, AuthGuard } from './services';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -61,7 +61,7 @@ export const firebaseConfig = {
     AngularFireAuthModule
   ],
   providers: [ 
-    AngularFireDatabaseModule, CategoryService, TagService, QuestionService, CategoryActions, TagActions, QuestionActions, AuthenticationService, UserActions, UIStateActions
+    AngularFireDatabaseModule, CategoryService, TagService, QuestionService, CategoryActions, TagActions, QuestionActions, AuthenticationService, AuthGuard, UserActions, UIStateActions
   ],
   bootstrap: [AppComponent]
 })
