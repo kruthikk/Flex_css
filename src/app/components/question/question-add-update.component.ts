@@ -5,7 +5,8 @@ import { Observable } from 'rxjs/Observable';
 
 import { AppStore } from '../app/store/app-store';
 import { QuestionActions } from '../app/store/actions/';
-import { Category, Question, Answer }     from '../../model';
+import { Category, Question, Answer, AppUser }     from '../../model';
+import { Router } from '@angular/router';
 
 @Component({
 	templateUrl: './question-add-update.component.html',
@@ -27,6 +28,8 @@ export class QuestionAddUpdateComponent implements OnInit, OnDestroy {
 
 	autoTags:string[]=[];
 	enteredTags:string[]=[];
+
+	user: AppUser;
 	
 	get answers():FormArray{
 		return this.questionForm.get('answers') as FormArray;
@@ -38,9 +41,15 @@ export class QuestionAddUpdateComponent implements OnInit, OnDestroy {
 
 	constructor(private fb:FormBuilder,
 		private store: Store<AppStore>,
-		private questionActions: QuestionActions){
+		private questionActions: QuestionActions,
+		private router:Router){
 			this.categoriesObs = store.select(s=> s.categories);
 			this.tagsObs = store.select(s=>s.tags);
+			this.sub2 = store.select(s=>s.user).subscribe(user=> {
+				this.user=user;
+				if(!user)
+					this.router.navigate(['/']);
+			})
 		}
 
 	ngOnInit(){

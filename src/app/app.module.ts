@@ -9,16 +9,17 @@ import { MaterialModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { routes }   from './app.route';
-import { AppComponent, CategoriesComponent, TagsComponent, QuestionsComponent, QuestionAddUpdateComponent } from './components';
-import { CategoryService, TagService, QuestionService } from './services';
+import { AppComponent, CategoriesComponent, TagsComponent, QuestionsComponent, QuestionAddUpdateComponent, LoginComponent, PasswordAuthComponent } from './components';
+import { CategoryService, TagService, QuestionService, AuthenticationService } from './services';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { CategoryEffects, TagEffects, QuestionEffects } from './components/app/store/effects';
-import { CategoryActions, TagActions, QuestionActions } from './components/app/store/actions';
+import { CategoryActions, TagActions, QuestionActions, UserActions, UIStateActions } from './components/app/store/actions';
 import {default as reducer } from './components/app/store/app-store';
 import {AngularFireModule} from 'angularfire2';
 import { AngularFireDatabaseModule } from "angularfire2/database-deprecated"
+import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
 
 export const firebaseConfig = {
     apiKey: "AIzaSyCGbTtH0O_u-ZdjEXRgs91_RjXTw1KiwBk",
@@ -30,7 +31,11 @@ export const firebaseConfig = {
 
 @NgModule({
   declarations: [
-    AppComponent, CategoriesComponent, TagsComponent, QuestionsComponent, QuestionAddUpdateComponent
+    AppComponent, CategoriesComponent, TagsComponent, QuestionsComponent, QuestionAddUpdateComponent, LoginComponent, PasswordAuthComponent
+  ],
+  entryComponents: [
+    LoginComponent,
+    PasswordAuthComponent
   ],
   imports: [
     BrowserModule,
@@ -52,10 +57,11 @@ export const firebaseConfig = {
     EffectsModule.run(TagEffects),
     EffectsModule.run(QuestionEffects),
     AngularFireDatabaseModule,
-    AngularFireModule.initializeApp(firebaseConfig)
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireAuthModule
   ],
   providers: [ 
-    AngularFireDatabaseModule, CategoryService, TagService, QuestionService, CategoryActions, TagActions, QuestionActions
+    AngularFireDatabaseModule, CategoryService, TagService, QuestionService, CategoryActions, TagActions, QuestionActions, AuthenticationService, UserActions, UIStateActions
   ],
   bootstrap: [AppComponent]
 })
